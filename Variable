@@ -1,0 +1,37 @@
+根据官方文档“Programmer's Guide Variables” 整理
+
+Variable
+
+变量是可以改变值的tensor，一般的tensor都是不可以改变值的
+
+1. tf.get_variable(name="")创建或重新使用已创建的变量
+	1.1 name和变量一一对应
+	1.2 默认的intializer是tf.glorot_uniform_initializer
+	
+2. Variable Collection
+	2.1 默认在tf.GraphKeys.GLOBAL_VARIABLES（shared across devices）和tf.GraphKeys.TRAINABLE_VARIABLES两个里面
+	trainable: If True also add the variable to the graph collection GraphKeys.TRAINABLE_VARIABLES.
+	collections: List of graph collections keys to add the Variable to. Defaults to [GraphKeys.GLOBAL_VARIABLES].
+	2.2 加入tf.GraphKeys.LOCAL_VARIABLES，变量成为non trainable
+	
+3. Initializing variables
+	3.1 tf.estimator.Estimator and Keras等高级API会自动initialize变量
+	3.2 在低级API里面
+	tf.global_variables_initializer()returns a single operation responsible for initializing all variables in the tf.GraphKeys.GLOBAL_VARIABLES collection
+	session.run(my_variable.initializer)初始化单个变量
+	
+Sharing Variable
+方式1：传递Variable object
+
+方式2：将tf.get_variable object包裹在tf.variable_scope object里
+with tf.variable_scope(name='a') as vs:
+	tf.get_variable(name='b') #name = 'a/b'
+with tf.variable_scope(name='c') as vs:
+	tf.get_variable(name='b') #name = 'c/b'
+就会创建不同的变量了
+
+要想share变量，应该指定reuse
+with tf.variable_scope(name='a') as vs:
+	tf.get_variable(name='b') 
+with tf.variable_scope(name='a',reuse=True) as vs:
+	tf.get_variable(name='b')
