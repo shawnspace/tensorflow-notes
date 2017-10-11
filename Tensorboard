@@ -1,0 +1,39 @@
+根据 https://github.com/tensorflow/tensorboard/blob/master/README.md 整理
+
+Key Concepts
+Summary ops: the Tensors they produce contain serialized protobufs
+	tf.summary.scalar
+	tf.summary.image
+	tf.summary.audio
+	tf.summary.text
+	tf.summary.histogram
+	
+Tag: When you initialize a summary op, you will also give it a tag. The tag is a name for the data recorded by that op, and will be used to organize the data in the frontend Tensorboard
+
+Event Files & LogDirs
+summary.FileWriters将summary op的serialized protobufs写到logdir里
+Specifically, the data is written to an append-only record dump that will have "tfevents" in the filename
+TensorBoard search events file in the entire directory, and organizes it into the history of a single execution
+
+Comparing different executions of your model
+tensorboard --logdir name1:/path/to/logs/1,name2:/path/to/logs/2
+
+Scalar Dashboard
+Dragging a rectangular region on the chart will zoom in
+Double clicking on the chart will zoom out
+
+Histogram Dashboard
+Each chart shows temporal "slices" of data, where each slice is a histogram of the tensor at a given step. 
+timestamp最旧的在后面，最新的在前面
+
+Distribution Dashboard
+每条线代表了一个percentile随时间变化的趋势
+从top到bottom，每条线代表的percentile是 [maximum, 93%, 84%, 69%, 50%, 31%, 16%, 7%, minimum]
+
+Graph Explorer
+建议使用name scopes来组织graph里的op
+
+Embedding Projector
+从checkpoint文件里读取数据
+
+
