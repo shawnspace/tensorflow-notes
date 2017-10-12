@@ -1,0 +1,72 @@
+tf.Graph
+1. 存了Graph的结构
+2. 提供了graph collections机制来存graph的metadata
+
+创建tf.Graph
+1. TensorFlow provides a default graph that is an implicit argument to all API functions in the same context
+2. Default graph一般就足够了
+
+Naming operations
+每创建一个op都会被加到graph里，每一个op都有唯一的name和它对应
+1. Each API function that creates a new tf.Operation or returns a new tf.Tensor accepts an optional name argument
+	tf.constant(42.0, name="answer")，产生一个op，名字为'answer'. 如果已经有'name'的op了，那会被自动加成'name_1'
+	tf.name_scope可以创建一个scope，scope里的op的name会自动被添加一个prefix。如果当前scope已经存在同名的subscope，则自动添加'_1','_2'在新建subscope后面
+
+c_0 = tf.constant(0, name="c")  # => operation named "c"
+
+# Already-used names will be "uniquified".
+c_1 = tf.constant(2, name="c")  # => operation named "c_1"
+
+# Name scopes add a prefix to all operations created in the same context.
+with tf.name_scope("outer"):
+  c_2 = tf.constant(2, name="c")  # => operation named "outer/c"
+
+  # Name scopes nest like paths in a hierarchical file system.
+  with tf.name_scope("inner"):
+    c_3 = tf.constant(3, name="c")  # => operation named "outer/inner/c"
+
+  # Exiting a name scope context will return to the previous prefix.
+  c_4 = tf.constant(4, name="c")  # => operation named "outer/c_1"
+
+  # Already-used name scopes will be "uniquified".
+  with tf.name_scope("inner"):
+    c_5 = tf.constant(5, name="c")  # => operation named "outer/inner_1/c"
+给op命名的好处是在visualize graph的时候op会按namescope被组织起来：将用一个name_scope里的op组合成一个super node
+
+Naming tensor
+任何一个tensor都是由某个op产生的，tensor的name不可更改，构成为 '<op_name>:<i>' ：
+	<op_name>是产生该tensor的op的名字
+	<i> is an integer representing the index of that tensor among the operation's outputs.
+	
+op接受的参数：tensor-like object
+能接受tensor作为参数输入的op其实可以接受其他tensor-like object并自动用tf.convert_to_tensor把它们转换成tensor：
+	tf.Tensor
+	tf.Variable
+	numpy.ndarray
+	list (and lists of tensor-like objects)
+	Scalar Python types: bool, float, int, str
+注意：当使用同一个tensor-like object时，tensorflow默认都会创建一个新的tf.Tensor对象。为避免占据太多内存，应手动对tensor-like object调用tf.convert_to_tensor，然后使用返回的tf.Tensor对象
+
+tf.Session
+tf.Session讲client program连接到c++核心
+创建Session：使用with语句来自动释放Session所占用的资源，不然就手动tf.Session.close
+tf.Session.__init__:
+	target：session所要连接的machine，None的话就是local machine
+	graph：所要执行的graph，默认是default graph
+	config：一些对于session控制的参数
+fetch机制
+feed机制
+
+
+
+
+
+
+
+
+
+
+
+
+
+
