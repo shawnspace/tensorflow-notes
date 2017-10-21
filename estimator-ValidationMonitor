@@ -1,0 +1,17 @@
+一. tf.Estimator.estimator中的hooks机制
+
+tf.Estimator.estimator.train -> training.MonitoredTrainingSession -> training.MonitoredSession -> 在session不同阶段调用hook的对应函数
+
+tf.Estimator.estimator内含了几种常见的hook:TensorLogHook, SummarySaverHook, StepCounterHook, StopAtStepHook。在estimator.__init__()的config参数里面指定这些hooks的参数，如every_n_step。
+
+如SummarySaverHook是在MonitoredTrainingSession里被创建，需要被写出到文件的summary op是通过创建的Scaffold对象的summary_op来指定的，该op默认为ops.GraphKeys.SUMMARY_OP。所以在model_fn里构建图的时候把需要写出的tensor加上summary_op并加入到ops.GraphKeys.SUMMARY_OP的collection即可以被自动写出到文件
+
+二. tf.contrib.learn.Estimator中的monitor机制
+
+已经被遗弃，现在都是通过monitor_lib.replace_monitors_with_hooks(monitors, estimator)来将monitor包装成RunHookAdapterForMonitors类的对象，其实就是把原来baseMonitor的step_end等函数包装成hook对应的函数。
+
+三. 注意
+在tf.Estimator.estimator框架下使用ValidationMonitor时,不要在初始化时指定metrics。ValidationMonitor被包裹成RunHookAdapterForMonitors后，会在step_end被调用后调用every_n_step_end函数，在里面调用_evaluate_estimator函数来获得validation结果。_evaluate_estimator函数会调用tf.Estimator.estimator.evaluate。所以在estimator的model_fn的ModeKeys.EVAL模式下返回的的eval_metric_ops里指定metrics。
+
+但测试集或者验证集输入还是由ValidationMonitor的input_fn来输入。
+
