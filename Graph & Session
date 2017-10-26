@@ -33,6 +33,9 @@ with tf.name_scope("outer"):
     c_5 = tf.constant(5, name="c")  # => operation named "outer/inner_1/c"
 给op命名的好处是在visualize graph的时候op会按namescope被组织起来：将用一个name_scope里的op组合成一个super node
 
+与variable_scope的差别
+同样会给scope内的op以及tf.Variable的name加上prefix，但tf.get_variable函数会忽略所在的name_scope。
+
 Naming tensor
 任何一个tensor都是由某个op产生的，tensor的name不可更改，构成为 '<op_name>:<i>' ：
 	<op_name>是产生该tensor的op的名字
