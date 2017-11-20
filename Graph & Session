@@ -51,14 +51,16 @@ op接受的参数：tensor-like object
 注意：当使用同一个tensor-like object时，tensorflow默认都会创建一个新的tf.Tensor对象。为避免占据太多内存，应手动对tensor-like object调用tf.convert_to_tensor，然后使用返回的tf.Tensor对象
 
 tf.Session
-tf.Session讲client program连接到c++核心
+tf.Session将client program连接到c++核心
 创建Session：使用with语句来自动释放Session所占用的资源，不然就手动tf.Session.close
 tf.Session.__init__:
 	target：session所要连接的machine，None的话就是local machine
 	graph：所要执行的graph，默认是default graph
 	config：一些对于session控制的参数
-fetch机制
-feed机制
+
+feed机制：向图传入数据，可以是numpy，list等python中常用的数据结构
+
+fetch机制：从图中取出数据，类型为numpy的数据类型，可以直接在python中进行处理
 
 
 
