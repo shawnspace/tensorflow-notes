@@ -6,3 +6,7 @@
 # 2.Tensorboard
 
 # 3.Graph & Session
+
+# 4.tf.estimator.Estimator框架中的hook机制以及ValidationMonitor的使用办法
+
+# 5.Reading Data
