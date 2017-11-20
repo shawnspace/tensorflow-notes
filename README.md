@@ -9,4 +9,4 @@
 
 # 4.tf.estimator.Estimator框架中的hook机制以及ValidationMonitor的使用办法
 
-# 5.Reading Data
+# 5.Input Mechanism
