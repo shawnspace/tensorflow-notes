@@ -1,6 +1,6 @@
 tf.Graph
 1. 存了Graph的结构
-2. 提供了graph collections机制来存graph的metadata
+2. 提供了graph collections机制来存graph的metadata，collection就是op或者tensor（包括Variable）的集合
 
 创建tf.Graph
 1. TensorFlow provides a default graph that is an implicit argument to all API functions in the same context
