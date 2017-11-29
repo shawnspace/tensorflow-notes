@@ -20,7 +20,7 @@ LoggingTensorHook:默认把training loss和global step tensor输出到log，除�
 
 2.测试集或者验证集输入只能由ValidationMonitor的input_fn来输入，不再支持x,y,batch_size的参数
 
-四. 创建的global step variable要手动添加到GraphKeys.GLOBAL_STEP里面，不然找不到
+四. 在train_op指定的global step variable要用tf.train.get_global_step()来获得，因为estimator在train里面，在创建模型之前会自动创建一个global step variable
 
 五. tf.Estimator.estimator的evaluate机制
 在estimator_spec.eval_metric_ops里不能添加key为‘loss’的metric，会自动添加。
