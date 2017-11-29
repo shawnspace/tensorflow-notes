@@ -1,0 +1,4 @@
+一 存取variable
+要先搭好图
+tf.train.Saver会给graph里的每一个variable或者指定的variable添加一个save和一个restore的op，然后会提供一个总的op来存和读这些variable。
+存在checkpoint文件里，就是variable name 和 variable tensor value的对应
