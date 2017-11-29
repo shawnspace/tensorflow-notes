@@ -4,10 +4,12 @@ tf.Estimator.estimator.train -> training.MonitoredTrainingSession -> training.Mo
 
 tf.Estimator.estimator内含了几种常见的hook:TensorLogHook, SummarySaverHook, StepCounterHook, StopAtStepHook。在estimator.__init__()的config参数里面指定这些hooks的参数。
 
-SummarySaverHook是在MonitoredTrainingSession里被创建，需要被写出到文件的summary op是通过创建的Scaffold对象的summary_op来指定的，该op默认为ops.GraphKeys.SUMMARY_OP。所以在model_fn里构建图的时候把需要写出的tensor加上summary_op并加入到ops.GraphKeys.SUMMARY_OP的collection即可以被自动写出到文件。通过config的save_summary_steps参数来指定每多少步输出一次summary。
+SummarySaverHook是在MonitoredTrainingSession里被创建，需要被写出到文件的summary op是通过创建的Scaffold对象的summary_op来指定的，该op默认为ops.GraphKeys.SUMMARY_OP。所以在model_fn里构建图的时候把需要写出的tensor加上summary_op并加入到ops.GraphKeys.SUMMARY_OP的collection即可以被自动写出到文件。通过config的save_summary_steps参数来指定每多少步输出一次summary。注意：连最基本的loss也要自己添加summary_op
 evaluation模式下的eval_metrics的summary会在evaluation结束之后自动被写出。
 
 StepCounterHook是用来记录每秒运行了多少step的，默认为每100步计算一次。通过config的log_step_count_steps参数来指定。
+
+LoggingTensorHook:默认把training loss和global step tensor输出到log，除此之外training loss不会被自动写到summary
 
 二. tf.contrib.learn.Estimator中的monitor机制
 
@@ -17,6 +19,13 @@ StepCounterHook是用来记录每秒运行了多少step的，默认为每100步�
 1.在tf.Estimator.estimator框架下使用ValidationMonitor时,不要在初始化时指定metrics。ValidationMonitor被包裹成RunHookAdapterForMonitors后，会在step_end被调用后调用every_n_step_end函数，在里面调用_evaluate_estimator函数来获得validation结果。_evaluate_estimator函数会调用tf.Estimator.estimator.evaluate。所以在estimator的model_fn的ModeKeys.EVAL模式下返回的的eval_metric_ops里指定metrics。
 
 2.测试集或者验证集输入只能由ValidationMonitor的input_fn来输入，不再支持x,y,batch_size的参数
+
+四. 创建的global step variable要手动添加到GraphKeys.GLOBAL_STEP里面，不然找不到
+
+五. tf.Estimator.estimator的evaluate机制
+在estimator_spec.eval_metric_ops里不能添加key为‘loss’的metric，会自动添加。
+得到了结果的metric会被写出到summary，但不是以summary_op的形式，而是直接用summary.proto文件来写出。
+evaluate时会创建另一个图，并从model_dir加载checkpoint参数进来，再用MonitoredSession进行run，直到该session被要求停止或者interrupt，这一般是由tf.contrib.training.StopAfterNEvalsHook来完成
 
 
 
