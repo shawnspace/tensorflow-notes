@@ -1,3 +1,5 @@
 Three Type: Feed, Reading as graph node, Preload as constant and variables (预加载,word embedding常以此来加载)
 
 Queue: 本质是一个op，output是tuple of tensors。一个queue一般由separate的threads group（包在QueueRunner里面）来运行，这样可以一边读取新数据，一边对已读的数据做计算。一般来说在一个input pipeline里有两个QueueRunner，一个是对filename按epoch排序和shuffle的queue，另一个是对parse好的example做batch和shuffle的queue. QueueRunner最好配合上tf.train.Coordinator使用，coordinator会在某个thread发生错误时，通知其它thread停止.
+
+注意：在使用string_input_producer等创建filename queue后，num_epoches是被创建成local variable。要用tf.local_variable_initializer()来初始化它。
