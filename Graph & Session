@@ -4,7 +4,12 @@ tf.Graph
 
 创建tf.Graph
 1. TensorFlow provides a default graph that is an implicit argument to all API functions in the same context
-2. Default graph一般就足够了
+2. 对train，eval，inference 创建不同graph的好处：
+	a.The inference graph is usually very different from the other two
+	b.The eval graph becomes simpler since it no longer has all the additional backprop ops.
+	c.Data feeding can be implemented separately for each graph.
+	d.Variable reuse is much simpler. For example, in the eval graph there's no need to reopen variable scopes with reuse=True just because the Training model created these variables already.
+	e. In distributed training, it is commonplace to have separate workers perform training, eval, and inference. These need to build their own graphs anyway. So building the system this way prepares you for distributed training.
 
 Naming operations
 每创建一个op都会被加到graph里，每一个op都有唯一的name和它对应
