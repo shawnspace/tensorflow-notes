@@ -1,0 +1,30 @@
+1. Servable: 核心abstraction，一个interface
+servable与model的关系：一个servable可以是一个完整的model或者model的某个部分
+
+2. Version
+servable stream: the sequence of versions of a servable
+Aspired versions： represent the set of servable versions that should be loaded and ready
+
+3. Loader  
+Loader manage a servable's life cycle,由Source创建，由manager来决定是否调用它来加载一个Aspired version of servable
+
+4. Source
+Sources 从file system 来产生不同version的servables; each Source originates zero or more servable streams. 并把它们通知给Manager
+
+5. Manager
+Managers handle the full lifecycle of Servables, including:
+loading Servables
+serving Servables
+unloading Servables
+Managers listen to Sources and track all versions.
+直接向client返回servable的handle
+
+6. Serving Core 
+TensorFlow Serving Core manages (via standard TensorFlow Serving APIs) the lifecycle and metrics of servables
+
+
+
+
+
+
+
