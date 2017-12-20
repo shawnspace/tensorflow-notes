@@ -1,4 +1,23 @@
-一 存取variable
+一 只存取variable
 要先搭好图
 tf.train.Saver会给graph里的每一个variable或者指定的variable添加一个save和一个restore的op，然后会提供一个总的op来存和读这些variable。
 存在checkpoint文件里，就是variable name 和 variable tensor value的对应
+
+二 SavedModel，存取一整个model
+1. MetaGraph:a dataflow graph and its variables and signature.
+2. MetaGraphDef: the protocol buffer representation for a MetaGraph
+3. SavedModelBuilder： save the MetaGraphDef 到disk
+  3.1 在添加MetaGraphDef到SavedModelBuilder时，需要一个tag，用来identify这个对应的MetaGraphDef，在load和restore的时候都需要它
+  3.2 先使用add_meta_graph_and_variables函数来添加第一个metagraph(比如training graph)和variable，要添加其它的metagraph（比如inference graph），再使用add_meta_graph。它里面其实都是用Saver来完成的
+  标准用法
+  builder = tf.saved_model.builder.SavedModelBuilder(export_dir)
+  builder.add_meta_graph_and_variables(sess,
+                                       ["foo-tag"],
+                                       signature_def_map=foo_signatures,
+                                       assets_collection=foo_assets)
+  builder.add_meta_graph(["bar-tag", "baz-tag"],
+                         assets_collection=bar_baz_assets)
+  builder.save()
+                                     
+4. 使用tf.saved_model.loader.load方法来加载model
+  例如：tf.saved_model.loader.load(sess, [tag_constants.TRAINING], export_dir)
