@@ -1,0 +1,17 @@
+Helper Class
+辅助的功能：读取当前的一个词；根据hidden state对candidate输出进行sampling。
+
+BasicDecoderOutput Class
+数据储存功能：存着每一个decoded的rnn output（经过output layer投影）和按照sample策略得到的词的id
+
+Decoder Class
+执行功能：将各个组件使用起来对一个batch的数据进行一次decode
+1.包含了RNN cell，helper和output layer这3个部分
+2.核心函数 step
+  输入：前一step中helper读取的input，前一step的hidden state。
+  中间：用RNN cell产生新的hidden state，并经过output layer投影，再用helper进行sampling 得到output和下一个step的input，并由helper判断是否结束decode
+  输出：BasicDecoderOutput；下一个step的input和state；一个batch长度finished的flag向量
+  step函数并不管当前batch中那些entry是finished的,因为对已经finish的进行下一步decode也不影响什么
+  
+dynamic_decode 方法
+使用while_loop函数来创造动态图，在每一time step中计算该batch中的每一个entry是否finish以及它的final length是多少，使用TensorArray来记录每一个time step产生新数据。这里的TensorArray中每一个Array是以形状为[batch_size,rnn_output]的tensor
