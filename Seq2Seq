@@ -15,3 +15,24 @@ Decoder Class
   
 dynamic_decode 方法
 使用while_loop函数来创造动态图，在每一time step中计算该batch中的每一个entry是否finish以及它的final length是多少，使用TensorArray来记录每一个time step产生新数据。这里的TensorArray中每一个Array是以形状为[batch_size,rnn_output]的tensor
+
+AttentionMechanism Class
+采用memory + query方式来算出alignment score
+memory: 一般是rnn的hidden states,shape = [batch,max_time,rnn_num_units]
+_values: mask之后的memory
+_keys:将_values经过投影之后得到的tensor，形状为[batch,max_time,rnn_num_units]，投影采用的是tf.layers.Dense(bias为0)
+__call__():将query进行投影，然后与_keys算alignments，alignments形状为[batch_size, max_time],表示每一个hidden state应得的unnormalized分数
+
+AttenWrapper Class
+是RNNCell的subclass。
+进行一次decode，不是像论文中那样是先算各个hidden state的weight。weighted sum的过程由上一个time step计算出decoder的hidden state之后直接进行，再通过output将上一个time step的hidden state和weighted sum传递给当前的step。
+1.Mix the `inputs` and previous step's `attention` output via`cell_input_fn`.
+2. Call the wrapped `cell` with this input and its previous state.
+3. Score the cell's output with `attention_mechanism`.
+4. Calculate the alignments by passing the score through the
+  `normalizer`.
+5. Calculate the context vector as the inner product between the
+  alignments and the attention_mechanism's values (memory).
+6. Calculate the attention output by concatenating the cell output
+  and context through the attention layer (a linear layer with
+  `attention_layer_size` outputs).
