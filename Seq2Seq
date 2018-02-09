@@ -23,9 +23,13 @@ _values: mask之后的memory
 _keys:将_values经过投影之后得到的tensor，形状为[batch,max_time,rnn_num_units]，投影采用的是tf.layers.Dense(bias为0)
 __call__():将query进行投影，然后与_keys算alignments，alignments形状为[batch_size, max_time],表示每一个hidden state应得的unnormalized分数
 
+AttentionWrapperState Class
+cell_state：rnn cell在前一步的原始state，batch,rnn_output_size
+attention：在前一step，结合了context和rnn cell output(hidden state)的向量
+
 AttenWrapper Class
-是RNNCell的subclass。
-进行一次decode，不是像论文中那样是先算各个hidden state的weight。weighted sum的过程由上一个time step计算出decoder的hidden state之后直接进行，再通过output将上一个time step的hidden state和weighted sum传递给当前的step。
+1.是RNNCell的subclass。
+2.进行一次decode，不是像论文中那样是先算各个hidden state的weight。weighted sum的过程由上一个time step计算出decoder的hidden state之后直接进行，再通过output将上一个time step的hidden state和weighted sum传递给当前的step。
 1.Mix the `inputs` and previous step's `attention` output via`cell_input_fn`.
 2. Call the wrapped `cell` with this input and its previous state.
 3. Score the cell's output with `attention_mechanism`.
@@ -36,3 +40,6 @@ AttenWrapper Class
 6. Calculate the attention output by concatenating the cell output
   and context through the attention layer (a linear layer with
   `attention_layer_size` outputs).
+3.输出: attention(对应原rnn cell output)：将rnn cell output和context拼接在一起并投影到rnn_num_units。一个AttentionWrapperState的instance(对应原rnn cell state)。
+
+  alignments and the attention_mechanism's values (memory).
