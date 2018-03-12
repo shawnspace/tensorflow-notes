@@ -1,0 +1,23 @@
+Tensor has two key properties:
+1. Shape
+2. Dtype
+Dtype is always known. 
+The shape might be only partially known. Most operations produce tensors of fully-known shapes if the shapes of their inputs are also fully known. In some cases it's only possible to find the shape of a tensor at graph execution time.
+The value of a tensor is immutable
+
+Rank
+1. rank = 0: scalar, so to produce a scalar specify shape = []
+    Tensor with shape = [1] is not a scalar
+2. r = tf.rank(tensor), r is a tensor need to be run by session
+
+Shape
+There are two ways of accessing the shape of a tf.Tensor
+1. This can be done by reading the shape property of a tf.Tensor object. This method returns a TensorShape object (only partiallty known shape): a.shape[0].value
+2. The tf.shape operation will represent the fully-defined shape of another tf.Tensor at runtime
+
+Referring to tf.Tensor slices
+1. specify n indices for rank = n tensor
+  For a rank 0 tensor (a scalar), no indices are necessary, since it is already a single number
+  For rank 1: my_scalar = my_vector[2], Note that the index passed inside the [] can itself be a scalar tf.Tensor, if you want to dynamically choose an element from the vector.
+  For rank 2: my_scalar = my_matrix[1, 2] (get a scalar); my_column_vector = my_matrix[:, 3]
+  
