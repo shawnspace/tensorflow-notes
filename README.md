@@ -1,12 +1,18 @@
 # tensorflow-notes
 官方API的学习笔记，现在有以下部分
 
-# 1.Variable
+# Tensor
 
-# 2.Tensorboard
+# Variable
 
-# 3.Graph & Session
+# Graph & Session
 
-# 4.Estimator框架注意事项
+# Input Mechanism
 
-# 5.Input Mechanism
+# Saving and Restore model
+
+# Seq2Seq
+
+# Tensorboard
+
+# Estimator框架注意事项
