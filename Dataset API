@@ -1,0 +1,37 @@
+在之前的feed和queue runner之后的新的数据加载API
+
+Dataset
+A dataset comprises elements that each have the same structure。每个元素相当于一个data example，每个元素包含好几个tensor或者list of tensor，每个tensor可以用来存不同特征和标签。
+
+Dataset构建
+Dataset可以由其他tf.Tensor创建得到，也可以从一些固定格式的文件中创建
+Dataset.output_types and Dataset.output_shapes properties allow you to inspect the inferred types and shapes of each tensor aof a dataset element
+
+Dataset预处理
+可以使用tf.Dataset.map()等函数进行自定义的预处理。
+转换函数的参数由元素的结构确定
+
+Iterator
+遍历器，有初始化和遍历下一个元素（不一定是Tensor）的两种功能
+
+创建遍历器
+1. 
+2. 使用tf.data.Dataset.make_one_shot_iterator，得到的遍历器是已经被初始化了的，不能再初始化。
+
+初始化遍历器
+调用该iterator的make_initializer函数，得到一个初始化的op，由session来run这个op，就可以初始化该iterator
+初始化的时候需要指定在哪个dataset上进行初始化，相当于该遍历器与之绑定
+
+使用遍历器从dataset取数据
+调用该iterator的get_next函数，得到dataset中下一个元素（一个data example）
+因为是tensor，就可以被当做计算图的输入节点
+训练的过程就和queue runner类似了：A typical loop will then call tf.Session.run on the result of that computation. The loop will terminate when the Iterator.get_next() operation raises tf.errors.OutOfRangeError
+
+四种遍历器
+A one-shot iterator：iterating once through a dataset, 不需要初始化
+An initializable iterator： 使用tf.data.Dataset.make_initializable_iterator，得到的遍历器是没有初始化的，必须手动初始化。it enables you to parameterize the definition of the dataset, using one or more tf.placeholder() tensors that can be fed when you initialize the iterator
+A reinitializable iterator: can be initialized from multiple different Dataset objects. 使用tf.data.Iterator.from_structure这个静态方法构造。
+A feedable：是用来在多个iterator中选择哪一个来向当前的计算图提供数据。这些iterator可以在各自的dataset上初始化好。但要求dataset的元素结果相同。由tf.data.Iterator.from_string_handle构造。每个iterator自己的handle由string_handle()得到。
+
+
+
