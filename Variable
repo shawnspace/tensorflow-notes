@@ -13,12 +13,17 @@ Variable
 	trainable: If True also add the variable to the graph collection GraphKeys.TRAINABLE_VARIABLES.
 	collections: List of graph collections keys to add the Variable to. Defaults to [GraphKeys.GLOBAL_VARIABLES].
 	2.2 加入tf.GraphKeys.LOCAL_VARIABLES，变量成为non trainable
+	2.3 也可以创建自己的collection，不需要明确的创建collection，只要调用 tf.add_to_collection时指定一个string当名字就行
+	2.4 
 	
 3. Initializing variables
 	3.1 tf.estimator.Estimator and Keras等高级API会自动initialize变量
 	3.2 在低级API里面
 	tf.global_variables_initializer()returns a single operation responsible for initializing all variables in the tf.GraphKeys.GLOBAL_VARIABLES collection
 	session.run(my_variable.initializer)初始化单个变量
+	tf.local_variables_initializer来初始化local varible
+	3.3 print(session.run(tf.report_uninitialized_variables()))来查看哪些变量没有被初始化
+	3.4 要用其它variable的值来初始化时，使用variable.initialized_value()，不要直接使用variable
 	
 Sharing Variable
 方式1：传递Variable object
@@ -30,8 +35,11 @@ with tf.variable_scope(name='c') as vs:
 	tf.get_variable(name='b') #name = 'c/b'
 就会创建不同的变量了
 
-要想share变量，应该指定reuse
+要想share变量，应该指定reuse，被指定reuse后的variable_scope内的参数必须是已经创建的
 with tf.variable_scope(name='a') as vs:
 	tf.get_variable(name='b') 
 with tf.variable_scope(name='a',reuse=True) as vs:
 	tf.get_variable(name='b')
+
+如果reuse是false，则该variable_scope内的参数必须是不存在的
+如果reuse是tf.AUTO_REUSE, tf会自动决定该variable_scope内的参数是要用旧的还是创造新的。
