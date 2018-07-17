@@ -9,6 +9,10 @@ Rank
 1. rank = 0: scalar, so to produce a scalar specify shape = []
     Tensor with shape = [1] is not a scalar
 2. r = tf.rank(tensor), r is a tensor need to be run by session
+3. string tensor是一个scalar tensor
+mammal = tf.Variable("Elephant", tf.string)
+ignition = tf.Variable(451, tf.int16)
+floating = tf.Variable(3.14159265359, tf.float64)
 
 Shape
 There are two ways of accessing the shape of a tf.Tensor
