@@ -10,6 +10,7 @@ tf.Graph
 	c.Data feeding can be implemented separately for each graph.
 	d.Variable reuse is much simpler. For example, in the eval graph there's no need to reopen variable scopes with reuse=True just because the Training model created these variables already.
 	e. In distributed training, it is commonplace to have separate workers perform training, eval, and inference. These need to build their own graphs anyway. So building the system this way prepares you for distributed training.
+3. 使用g = tf.Graph()来创建新的图，用with g.as_default()来做context manager。用g = tf.get_default_graph()来检查当前的context
 
 Naming operations
 每创建一个op都会被加到graph里，每一个op都有唯一的name和它对应
@@ -56,16 +57,38 @@ op接受的参数：tensor-like object
 注意：当使用同一个tensor-like object时，tensorflow默认都会创建一个新的tf.Tensor对象。为避免占据太多内存，应手动对tensor-like object调用tf.convert_to_tensor，然后使用返回的tf.Tensor对象
 
 tf.Session
-tf.Session将client program连接到c++核心
-创建Session：使用with语句来自动释放Session所占用的资源，不然就手动tf.Session.close
-tf.Session.__init__:
+1. tf.Session将client program连接到c++核心
+2. 创建Session：使用with语句来自动释放Session所占用的资源，不然就手动tf.Session.close
+3. tf.Session.__init__:
 	target：session所要连接的machine，None的话就是local machine
-	graph：所要执行的graph，默认是default graph
+	graph：所要执行的graph，默认是当前的default graph
 	config：一些对于session控制的参数
 
-feed机制：向图传入数据，可以是numpy，list等python中常用的数据结构
+4.feed机制：向图传入数据，可以是numpy，list等python中常用的数据结构
+  fetch机制：从图中取出数据，类型为numpy的数据类型，可以直接在python中进行处理
+5.可以监控运行过程中运行了哪些节点
+options = tf.RunOptions()
+options.output_partition_graphs = True
+options.trace_level = tf.RunOptions.FULL_TRACE
+metadata = tf.RunMetadata()
 
-fetch机制：从图中取出数据，类型为numpy的数据类型，可以直接在python中进行处理
+sess.run(y, options=options, run_metadata=metadata)
+
+# Print the subgraphs that executed on each device.
+print(metadata.partition_graphs)
+
+# Print the timings of each operation that executed.
+print(metadata.step_stats)
+
+一个清晰的tf程序应该写成
+g = tf.Graph()
+with g.as_default():
+	// add op node to graph
+	
+with tf.Session(graph = g) as sess:
+	// run computation on the graph
+
+
 
 
 
