@@ -16,8 +16,8 @@ floating = tf.Variable(3.14159265359, tf.float64)
 
 Shape
 There are two ways of accessing the shape of a tf.Tensor
-1. This can be done by reading the shape property of a tf.Tensor object. This method returns a TensorShape object (only partiallty known shape): a.shape[0].value
-2. The tf.shape operation will represent the fully-defined shape of another tf.Tensor at runtime
+1. This can be done by reading the shape property of a tf.Tensor object. This method returns a TensorShape object (only partiallty known shape): a.shape[0].value，可以直接得到数值
+2. The tf.shape operation will represent the fully-defined shape of another tf.Tensor: 返回的是一个tensor，可以在运行时确定tensor的形状
 
 Referring to tf.Tensor slices
 1. specify n indices for rank = n tensor
