@@ -1,0 +1,14 @@
+#tf.while_loop
+参数
+condition参数：callable returning a boolean scalar tensor
+loop_vars参数：一个list或者nested list of tensor。会被传递给cond和body。`cond` and `body` both take as many arguments as there are `loop_vars`
+body参数: callable returning a (possibly nested) tuple, namedtuple or list of tensors of the same arity (length and structure) and types as `loop_vars`
+
+返回值
+The output tensors for the loop variables，当cond返回是False时while_loop返回
+如果loop_vars的length是1，则返回一个tensor，如果length > 1，则返回一个list
+
+内部机制
+while_loop只调用了body和condition函数各一次，将body和condition的节点构成的子图外加一些其它的op黏在一起，形成一个graph flow that
+  repeats `body` until `cond` returns false。这个graph flow只会在session里运行的时候才会循环的去执行body里的计算。
+
