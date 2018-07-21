@@ -7,9 +7,13 @@
 
 # Graph & Session
 
-# Input Mechanism
+# Dataset
 
 # Saving and Restore model
+
+# TensorArray
+
+# Flow Control
 
 # Seq2Seq
 
@@ -17,4 +21,5 @@
 
 # Estimator
 
-# Dataset
+# Input Mechanism
+
