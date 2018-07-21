@@ -15,7 +15,7 @@ t = output_ta.read(index = 0)
 返回的是tensor
 
 将TensorArray转换成Tensor
-t = output_ta.stack()
+t = output_ta.stack(): stack on first dimension
 t = output_ta.gather(indices = [0,2])
 t = output_ta.concat()
 
