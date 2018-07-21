@@ -9,4 +9,15 @@
 #dynamic_rnn函数
 1. 从max_time的维度对input用RNNCell进行计算
 2. 每一个time step得到的RNNCell state被写进TensorArray里
-3. 对于一个batch中已经超出sequence length的time step，会复制前一个time step的状态
+3. 对于一个batch中已经超出sequence length的time step，输出的state是复制前一个time step的状态，output则为zero tensor
+
+BasicRNN Cell
+1.输出的output就是state
+
+GRU Cell
+1.输出的output就是state
+
+BasicLSTM Cell
+state是一个namedtuple：LSTMStateTuple，其中'c'代表cell state， 'h'代表hidden state
+1. 因为forget gate，input_gate, output_gate还有cell state的new input都依赖于输入和h，所以他们被用同一个linear layer来计算
+2. 返回的（output, next_state）里，output是h，next_state是包含了c和h的LSTMStateTuple
