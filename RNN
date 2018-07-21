@@ -1,0 +1,12 @@
+要实现一个RNN层，需要两个部分：rnn_cell_impl.py里的RNNCell和rnn.py里的辅助函数
+
+#RNNCell class
+1.任何RNN cell（BasicRNN Cell，GRU cell或者LSTM Cell）都继承至这个类
+2.这个类继承自tensorflow.python.layers.base.Layer类，主要是为了overriding __call__这个函数接口
+3. 在__init__里并没有向图里添加变量和节点
+4. 调用call()的时候，才向计算图里添加变量和op，这往往发生在dynamic_rnn的while_loop调用它的body函数时
+
+#dynamic_rnn函数
+1. 从max_time的维度对input用RNNCell进行计算
+2. 每一个time step得到的RNNCell state被写进TensorArray里
+3. 对于一个batch中已经超出sequence length的time step，会复制前一个time step的状态
