@@ -1,0 +1,25 @@
+由tensor构成的array，可以动态地向里面加入tensor，所以常用来与loop等flow control op一起用
+
+构造
+tf.TensorArray(size=1, dynamic_size=True)
+size代表初始长度，dynamic_size为true表示可以动态的向里面添加tensor
+
+写入Tensor
+output_ta = output_ta.write(index=0,value=tf.constant(0,shape=[3,2]))
+将tf.constant(0,shape=[3,2])这个tensor写到index为0的位置
+该函数返回 A new TensorArray object with flow that ensures the write occurs. 所以之后的操作要使用这个返回的TensorArray object
+
+读取Tensor
+t = output_ta.read(index = 0)
+读取index为0的tensor
+返回的是tensor
+
+将TensorArray转换成Tensor
+t = output_ta.stack()
+t = output_ta.gather(indices = [0,2])
+t = output_ta.concat()
+
+将Tensor转化成TensorArray
+output_ta = output_ta.unstack(value = t)
+output_ta = output_ta.scatter(indices = [0,2], value= t):Scatter the values of a `Tensor` in specific indices of a `TensorArray`
+output_ta = output_ta.split(value = t, lengths = [3])
