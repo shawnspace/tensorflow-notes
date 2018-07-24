@@ -11,4 +11,20 @@ The output tensors for the loop variables，当cond返回是False时while_loop�
 内部机制
 while_loop只调用了body和condition函数各一次，将body和condition的节点构成的子图外加一些其它的op黏在一起，形成一个graph flow that
   repeats `body` until `cond` returns false。这个graph flow只会在session里运行的时候才会循环的去执行body里的计算。
+  
+tf.cond
+pred:一个scaler
+ture_fn: pred = true 时执行这个函数并返回结果
+false_fn: pred = false 时执行这个函数并返回结果
+`true_fn` and `false_fn` must have the same non-zero number and type of outputs
+
+返回值
+lists of output tensors
+
+内部机制
+`cond` calls `true_fn` and `false_fn` *exactly once* (inside the
+  call to `cond`, and not at all during `Session.run()`). `cond`
+  stitches together the graph fragments created during the `true_fn` and
+  `false_fn` calls with some additional graph nodes to ensure that the right
+  branch gets executed depending on the value of `pred`.
 
