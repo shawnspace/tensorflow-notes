@@ -31,8 +31,8 @@ attention：在前一step，结合了context和rnn cell output(hidden state)的�
 AttenWrapper Class
 1.是RNNCell的subclass。
 2.进行一次decode，不是像论文中那样是先算各个hidden state的weight。weighted sum的过程由上一个time step计算出decoder的hidden state之后直接进行，再通过output将上一个time step的hidden state和weighted sum传递给当前的step。
-1.Mix the `inputs` and previous step's `attention` output via`cell_input_fn`.
-2. Call the wrapped `cell` with this input and its previous state.
+1. Mix the `inputs` and previous step's `attention（context vector, weighted sum)` output via`cell_input_fn`.
+2. Call the wrapped `cell` with this input and its current state.
 3. Score the cell's output with `attention_mechanism`.
 4. Calculate the alignments by passing the score through the
   `normalizer`.
