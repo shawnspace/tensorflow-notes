@@ -13,9 +13,11 @@ Decoder Class
   中间：用RNN cell产生新的hidden state，并经过output layer投影，再用helper进行sampling 得到output和下一个step的input，并由helper判断是否结束decode
   输出：BasicDecoderOutput；下一个step的input和state；一个batch长度finished的flag向量
   step函数并不管当前batch中那些entry是finished的,因为对已经finish的进行下一步decode也不影响什么
-  
+3.BasicDecoder的output是一个namedtuple，由rnn_outpt和sample_id两个tensor组成。
+
 dynamic_decode 方法
-使用while_loop函数来创造动态图，在每一time step中计算该batch中的每一个entry是否finish以及它的final length是多少，使用TensorArray来记录每一个time step产生新数据。这里的TensorArray中每一个Array是以形状为[batch_size,rnn_output]的tensor
+使用while_loop函数来创造动态图，在每一time step中计算该batch中的每一个entry是否finish以及它的final length是多少，将input转换为Tensor
+Array，使用TensorArray来记录每一个time step产生的结果。
 
 AttentionMechanism Class
 采用memory + query方式来算出alignment score
