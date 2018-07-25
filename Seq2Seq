@@ -1,5 +1,6 @@
 Helper Class
 辅助的功能：读取当前的一个词；根据hidden state对candidate输出进行sampling。
+TrainingHelpler就将input转换为TensorArray
 
 BasicDecoderOutput Class
 数据储存功能：存着每一个decoded的rnn output（经过output layer投影）和按照sample策略得到的词的id
