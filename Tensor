@@ -24,4 +24,4 @@ Referring to tf.Tensor slices
   For a rank 0 tensor (a scalar), no indices are necessary, since it is already a single number
   For rank 1: my_scalar = my_vector[2], Note that the index passed inside the [] can itself be a scalar tf.Tensor, if you want to dynamically choose an element from the vector.
   For rank 2: my_scalar = my_matrix[1, 2] (get a scalar); my_column_vector = my_matrix[:, 3],维度
-  会自动降
+  slice得到的tensor会自动降维
