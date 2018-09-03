@@ -12,7 +12,8 @@ The output tensors for the loop variables，当cond返回是False时while_loop�
 while_loop只调用了body和condition函数各一次，将body和condition的节点构成的子图外加一些其它的op黏在一起，形成一个graph flow that
   repeats `body` until `cond` returns false。这个graph flow只会在session里运行的时候才会循环的去执行body里的计算。
   
-tf.cond
+#tf.cond
+参数
 pred:一个scaler
 ture_fn: pred = true 时执行这个函数并返回结果
 false_fn: pred = false 时执行这个函数并返回结果
@@ -27,4 +28,14 @@ lists of output tensors
   stitches together the graph fragments created during the `true_fn` and
   `false_fn` calls with some additional graph nodes to ensure that the right
   branch gets executed depending on the value of `pred`.
+  
+#tf.where
+参数
+condition：一个和x有同样形状，或者第一维度相匹配的tensor
+x:condition对应位置为true时返回的值
+y:condition对应位置为false时返回的值
+
+返回值
+当x, y 都 non-None时，返回 A Tensor with the same type and shape as x, y
+当x，y都为空时：返回 A Tensor with shape (num_true, dim_size(condition))
 
