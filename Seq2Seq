@@ -22,8 +22,10 @@ AttentionMechanism Class
 采用memory + query方式来算出alignment score
 memory: 一般是rnn的hidden states,shape = [batch,max_time,rnn_num_units]
 _values: mask之后的memory
-_keys:将_values经过投影之后得到的tensor，形状为[batch,max_time,attn_num_units]，投影采用的是tf.layers.Dense(bias为0)
+_keys:将_values经过投影之后得到的tensor，形状为[batch,max_time,attn_num_units]，投影采用的是tf.layers.Dense(bias为0)。也是被mask过了的
 __call__():将query进行投影，然后与_keys算alignments，alignments形状为[batch_size, max_time],表示每一个hidden state应得的unnormalized分数。
+_BaseAttentionMechanism Class
+AttentionMechanism Class的基类，会对values，keys分别进行mask，还会对probability_fn进行包装，在计算score时将padding部分的注意力分数mask为0
 
 AttentionWrapperState Class
 cell_state：rnn cell在前一步的原始state，形状为 batch,rnn_output_size
