@@ -23,12 +23,12 @@ AttentionMechanism Class
 采用memory + query方式来算出alignment score
 memory: 一般是rnn的hidden states,shape = [batch,max_time,rnn_num_units]
 _values: mask之后的memory
-_keys:将_values经过投影之后得到的tensor，形状为[batch,max_time,rnn_num_units]，投影采用的是tf.layers.Dense(bias为0)
+_keys:将_values经过投影之后得到的tensor，形状为[batch,max_time,attn_num_units]，投影采用的是tf.layers.Dense(bias为0)
 __call__():将query进行投影，然后与_keys算alignments，alignments形状为[batch_size, max_time],表示每一个hidden state应得的unnormalized分数
 
 AttentionWrapperState Class
 cell_state：rnn cell在前一步的原始state，batch,rnn_output_size
-attention：在前一step，结合了context和rnn cell output(hidden state)的向量
+attention: 如果attention layer是None的话，attention就是context向量
 
 AttenWrapper Class
 1.是RNNCell的subclass。
@@ -42,7 +42,5 @@ AttenWrapper Class
   alignments and the attention_mechanism's values (memory).
 6. Calculate the attention output by concatenating the cell output
   and context through the attention layer (a linear layer with
-  `attention_layer_size` outputs).
+  `attention_layer_size` outputs)。如果attention layer是None的话，attention就是context向量
 3.输出: attention(对应原rnn cell output)：将rnn cell output和context拼接在一起并投影到rnn_num_units。一个AttentionWrapperState的instance(对应原rnn cell state)。
-
-  alignments and the attention_mechanism's values (memory).
