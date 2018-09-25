@@ -33,7 +33,8 @@ alignment_history：TensorArray，每一个tensor的形状为b,s，对应那个s
 
 AttenWrapper Class
 1.是RNNCell的subclass。
-2.进行一次decode，不是像论文中那样是先算各个hidden state的weight。weighted sum的过程由上一个time step计算出decoder的hidden state之后直接进行，再通过output将上一个time step的hidden state和weighted sum传递给当前的step。
+2.call() 函数
+  进行一次decode，不是像论文中那样是先算各个hidden state的weight。weighted sum的过程由上一个time step计算出decoder的hidden state之后直接进行，再通过output将上一个time step的hidden state和weighted sum传递给当前的step。
   1. Mix the `inputs` and previous step's `attention（context vector, weighted sum)` output via`cell_input_fn`.
   2. Call the wrapped `cell` with this input and its current state.
   3. Score the cell's output with `attention_mechanism`.
@@ -52,6 +53,6 @@ dynamic_decode 方法
 1. 使用while_loop函数来创造动态图，在每一time step中计算该batch中的每一个entry是否finish以及它的final length是多少，将input转换为Tensor
 Array，使用TensorArray来记录每一个time step产生的结果。
 2. 返回的final_outputs, final_state, final_sequence_lengths中：
-final_outputs：就是BasicDecoderOutput，已经将每一step产生的sample_id和cell_output(经过output_layer投影）写到TensorArray里并stack成tensor了。形状为 b, s 和 b,s,vocab_size
+final_outputs：把每一step的BasicDecoderOutput的rnn_output（形状为 b,vocab_size）和sample_id (形状为b) 两个tensor写到对应的TensorArray中，并进行stack转化，得到名字还是为rnn_output和sample_id的tensor。形状为 b, s 和 b,s,vocab_size
 final_state：一般为AttentionWrapperState，其中的cell_state，attention，alignments都是最后一个step时的值。alignment_history是一个TensorArray，记录了每一个step的alignments向量
 final_sequence_lengths：形状为 b，一般不能直接使用。GreedyEmbeddingHelper算出来的final_sequence_lengths是正确的，TrainingHelper算出来的一般是最大句子长度。
