@@ -39,9 +39,6 @@ with tf.name_scope("outer"):
     c_5 = tf.constant(5, name="c")  # => operation named "outer/inner_1/c"
 给op命名的好处是在visualize graph的时候op会按namescope被组织起来：将用一个name_scope里的op组合成一个super node
 
-与variable_scope的差别
-同样会给scope内的op以及tf.Variable的name加上prefix，但tf.get_variable函数会忽略所在的name_scope。
-
 Naming tensor
 任何一个tensor都是由某个op产生的，tensor的name不可更改，构成为 '<op_name>:<i>' ：
 	<op_name>是产生该tensor的op的名字
@@ -55,6 +52,24 @@ op接受的参数：tensor-like object
 	list (and lists of tensor-like objects)
 	Scalar Python types: bool, float, int, str
 注意：当使用同一个tensor-like object时，tensorflow默认都会创建一个新的tf.Tensor对象。为避免占据太多内存，应手动对tensor-like object调用tf.convert_to_tensor，然后使用返回的tf.Tensor对象
+
+与variable_scope的差别
+1.name_scope会给该scope内的op加上prefix。另外创建一个name_scope时，只要name存在，则新创建的scope会被视为是同一个name_scope。
+2.name_scope不会给该scope内的variable加上prefix，里面的variable跟随name_scope外的scope名字来命名
+3.variable_scope会给该scope内的variable加上prefix，并且按variable是否reuse的规则来运行
+4.variable_scope会给该scope内的op加上prefix。另外创建一个同样name的variable_scope时，里面op的prefix会被算作不在同一scope：
+with tf.variable_scope('layer456') as vs:
+    t1 = tf.constant(1,dtype=tf.int32,shape=[])   #"layer456/Const:0"
+    t4 = tf.constant(1,dtype=tf.int32,shape=[])   #"layer456/Const_1:0"
+
+with tf.variable_scope('layer456', reuse=True):
+    t2 = tf.constant(2, dtype=tf.int32, shape=[])  #"layer456_1/Const:0"
+
+with tf.variable_scope(vs, reuse=True):
+    t3 =  tf.constant(3, dtype=tf.int32, shape=[])  #"layer456_2/Const:0"
+
+
+
 
 tf.Session
 1. tf.Session将client program连接到c++核心
