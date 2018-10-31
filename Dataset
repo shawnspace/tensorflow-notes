@@ -2,36 +2,46 @@
 
 Dataset
 A dataset comprises elements that each have the same structure。每个元素相当于一个data example，每个元素包含好几个tensor或者list of tensor，每个tensor可以用来存不同特征和标签。
+Dataset.output_types and Dataset.output_shapes properties allow you to inspect the inferred types and shapes of each tensor aof a dataset element
 
 Dataset构建
 Dataset可以由其他tf.Tensor创建得到，也可以从一些固定格式的文件中创建
-Dataset.output_types and Dataset.output_shapes properties allow you to inspect the inferred types and shapes of each tensor aof a dataset element
-用tf.data.Dataset.from_tensor_slices构建：如果参数直接提供数组，tf会将数据以常量的形式存在计算图里面，很耗内存。最好提供tf.placeholder，在iterator初始化的时候用feed_dict来提供真正的数据。
-用tf.data.TFRecordDataset构建：从tfrecord文件中构造dataset，可以直接传入文件名，也可以传入tf.placeholder，在初始化时用feed_dict来提供真正的文件名。
+1. 从内存中的数据创建：用tf.data.Dataset.from_tensor_slices构建，它的真正作用是切分传入Tensor的第一个维度，生成相应的dataset。如果参数直接提供数组，tf会将数据以常量的形式存在计算图里面，很耗内存。最好提供tf.placeholder，在iterator初始化的时候用feed_dict来提供真正的数据。
+2. 从硬盘中创建：tf.data.TFRecordDataset来从tfrecord文件中构造dataset，可以直接传入文件名，也可以传入tf.placeholder，在初始化时用feed_dict来提供真正的文件名。
+3. tf.data.TextLineDataset()：这个函数的输入是一个文件的列表，输出是一个dataset。dataset中的每一个元素就对应了文件中的一行。可以使用这个函数来读入CSV文件。
+4. tf.data.FixedLengthRecordDataset()：这个函数的输入是一个文件的列表和一个record_bytes，之后dataset的每一个元素就是文件中固定字节数record_bytes的内容。通常用来读取以二进制形式保存的文件，如CIFAR10数据集就是这种形式。
 
-Dataset预处理
-可以使用tf.Dataset.map()等函数进行自定义的预处理。
-转换函数的参数由元素的结构确定
+Dataset transformation
+可以使用tf.Dataset.map()等函数进行自定义的预处理。转换函数的参数由元素的结构确定
+map
+batch
+shuffle
+repeat：重复n个epoch
 
 Iterator
 遍历器，有初始化和遍历下一个元素（不一定是Tensor）的两种功能
-
-初始化遍历器
-调用该iterator的make_initializer函数，得到一个初始化的op，由session来run这个op，就可以初始化该iterator
-初始化的时候需要指定在哪个dataset上进行初始化，相当于该遍历器与之绑定
-
 使用遍历器从dataset取数据
 调用该iterator的get_next函数，得到dataset中下一个元素（一个data example）
 If element of the dataset has a nested structure, the return value of Iterator.get_next() will be one or more tf.Tensor objects in the same nested structure
 因为返回的是tensor，就可以被当做计算图的输入节点
 训练的过程就和queue runner类似了：A typical loop will then call tf.Session.run on the result of that computation. The loop will terminate when the Iterator.get_next() operation raises tf.errors.OutOfRangeError
-遍历完整个数据集后再调用get_next()会抛出tf.errors.OutOfRangeError异常。可以再次初始化它从而继续使用。但如果只是多次遍历的话，往往通过tf.dataset.repeat(n)就可以了。
+遍历完整个数据集后再调用get_next()会抛出tf.errors.OutOfRangeError异常。
 
-四种遍历器
-A one-shot iterator：iterating once through a dataset, 不需要初始化，使用tf.data.Dataset.make_one_shot_iterator构造
-An initializable iterator： 使用tf.data.Dataset.make_initializable_iterator，得到的遍历器是没有初始化的，必须手动初始化。it enables you to parameterize the definition of the dataset, using one or more tf.placeholder() tensors that can be fed when you initialize the iterator
-A reinitializable iterator: can be initialized from multiple different Dataset objects. 使用tf.data.Iterator.from_structure这个静态方法构造。
-A feedable：是用来在多个iterator中选择哪一个来向当前的计算图提供数据。这些iterator可以在各自的dataset上初始化好。但要求dataset的元素结果相同。由tf.data.Iterator.from_string_handle构造。每个iterator自己的handle由string_handle()得到。
+one-shot iterator
+iterating once through a dataset, 不需要初始化
+使用tf.data.Dataset.make_one_shot_iterator构造
+
+initializable iterator
+使用tf.data.Dataset.make_initializable_iterator构造，得到的遍历器是没有初始化的，必须手动初始化。
+调用该iterator的make_initializer函数，得到一个初始化的op，由session来run这个op，就可以初始化该iterator
+初始化的时候需要指定在哪个dataset上进行初始化，相当于该遍历器与之绑定
+it enables you to parameterize the definition of the dataset, using one or more tf.placeholder() tensors that can be fed when you initialize the iterator
+
+A reinitializable iterator
+can be initialized from multiple different Dataset objects. 使用tf.data.Iterator.from_structure这个静态方法构造。
+
+A feedable
+是用来在多个iterator中选择哪一个来向当前的计算图提供数据。这些iterator可以在各自的dataset上初始化好。但要求dataset的元素结果相同。由tf.data.Iterator.from_string_handle构造。每个iterator自己的handle由string_handle()得到。
 
 Save遍历器
 有时训练过程中需要存snapshot，需要存iterator的状态
