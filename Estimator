@@ -12,7 +12,7 @@ Return a Dataset object which contains the tuple: (features, labels). Note that 
 ## Feature columns
 1. feature column class works like a specification: describing how the model should use raw input data from the features dict
 ## Estimator
-1. Instantiate an estimator object and pass the feature column objects to it
+1. Instantiate an estimator object and pass the feature column objects to params arg.
 ## Call methods of estimator
 1. Call train, inference, evaluation method and pass input_fn
 
@@ -20,3 +20,20 @@ Return a Dataset object which contains the tuple: (features, labels). Note that 
 1. model_dir of tf.estimator specify the dir of model file and event file (for tensorboard)
 2. Create a tf.estimator.RunConfig object that defines the checkpoint schedule and pass it to config of estimator
 3. Train, evaluate, inference methods create a new model graph and initialize the variables from checkpoint file
+
+# Custom estimators
+##Basics
+1. Instantiate a tf.estimator.Estimator and pass a model_fn to it
+2. Try to utilize Layer and Metrics API
+
+## Procedure
+1. input_fn
+2. Feature columns: a list of feature_column object, pass it to params arg of Estimator
+3. model_fn
+
+## model_fn
+1. Define model graph 
+2. Define additional calculations for train, eval, predict mode.
+3. Return EstimatorSpec
+4. train: loss + train_op; eval: loss + dict of eval metrics; predict: logits + prob + class_ids
+5. Add summary to tensorboard
